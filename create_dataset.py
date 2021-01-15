@@ -61,6 +61,7 @@ def download_photos(query, dirname):
             full_path = f"{dirname}/test/"
         else:
             full_path = f"{dirname}/train/{query}"
+
         if full_path == f"{dirname}/test/":
             with open(full_path + "/" + str(testnum) + ".jpg", "wb") as f:
                 if link.endswith(".gif"):
@@ -74,8 +75,6 @@ def download_photos(query, dirname):
                     continue
                 img = requests.get(link)
                 f.write(img.content)
-
-
 
 
 if __name__ == "__main__":
