@@ -8,9 +8,9 @@ import os
 parser = argparse.ArgumentParser(description="Download images from a page")
 
 images_source_url = {
-    "yahoo": "https://images.search.yahoo.com/search/images;_ylt=Awr9Fqrbkv9fcncAGmOLuLkF;_ylc=X1MDOTYwNTc0ODMEX3IDMgRmcgMEZ3ByaWQDRkdUb2pTa0NTS0tNUDBtcTczN2N4QQRuX3N1Z2cDMTAEb3JpZ2luA2ltYWdlcy5zZWFyY2gueWFob28uY29tBHBvcwMwBHBxc3RyAwRwcXN0cmwDBHFzdHJsAzcEcXVlcnkDcGlrYWNodQR0X3N0bXADMTYxMDU4NDc5OA--?fr2=sb-top-images.search&p=query&ei=UTF-8&iscqry=&fr=sfp",
     "google": "https://www.google.com/search?safe=off&hl=en&authuser=0&tbm=isch&sxsrf=ALeKk033jcDp2FsqreF9t462fVAxrkwRLg%3A1610584921197&source=hp&biw=1440&bih=821&ei=WZP_X6XGCZW80PEP1fKh2Ag&q=query&oq=query&gs_lcp=CgNpbWcQAzIECCMQJzIICAAQsQMQgwEyBQgAELEDMgUIABCxAzIFCAAQsQMyBQgAELEDMggIABCxAxCDATIFCAAQsQMyBQgAELEDMgUIABCxAzoHCCMQ6gIQJzoCCABQuBZYhB1gnB5oAXAAeAGAAewBiAHNBJIBBTYuMC4xmAEAoAEBqgELZ3dzLXdpei1pbWewAQo&sclient=img&ved=0ahUKEwjl1uywmJruAhUVHjQIHVV5CIsQ4dUDCAc&uact=5",
-    "bing": "https://www.bing.com/images/search?q=query&qs=n&form=QBILPG&sp=-1&pq=query&sc=8-7&cvid=A6939D2F1C0047208F32FE76D80D7718&first=1&tsc=ImageBasicHover"}
+    "bing": "https://www.bing.com/images/search?q=query&qs=n&form=QBILPG&sp=-1&pq=query&sc=8-7&cvid=A6939D2F1C0047208F32FE76D80D7718&first=1&tsc=ImageBasicHover",
+    "yahoo": "https://images.search.yahoo.com/search/images;_ylt=Awr9Fqrbkv9fcncAGmOLuLkF;_ylc=X1MDOTYwNTc0ODMEX3IDMgRmcgMEZ3ByaWQDRkdUb2pTa0NTS0tNUDBtcTczN2N4QQRuX3N1Z2cDMTAEb3JpZ2luA2ltYWdlcy5zZWFyY2gueWFob28uY29tBHBvcwMwBHBxc3RyAwRwcXN0cmwDBHFzdHJsAzcEcXVlcnkDcGlrYWNodQR0X3N0bXADMTYxMDU4NDc5OA--?fr2=sb-top-images.search&p=query&ei=UTF-8&iscqry=&fr=sfp"}
 
 parser.add_argument("-q1", metavar="query", help="classification 1")
 parser.add_argument("-q2", metavar="query", help="classification 2")
@@ -42,7 +42,7 @@ def download_photos(query, dirname):
     Path(f"{dirname}/train/{query}").mkdir(parents=True, exist_ok=True)
     Path(f"{dirname}/validation/{query}").mkdir(parents=True, exist_ok=True)
 
-    testnum = len([name for name in os.listdir(dirname + "/test") if os.path.isfile(name)]) + 1
+    testnum = len(os.listdir(dirname + "/test")) + 1
 
     for idx, image in enumerate(images):
         link = None
@@ -59,21 +59,23 @@ def download_photos(query, dirname):
             full_path = f"{dirname}/validation/{query}"
         elif first_ten_percent < idx < first_ten_percent * 2:
             full_path = f"{dirname}/test/"
+        else:
+            full_path = f"{dirname}/train/{query}"
+        if full_path == f"{dirname}/test/":
             with open(full_path + "/" + str(testnum) + ".jpg", "wb") as f:
                 if link.endswith(".gif"):
                     continue
                 img = requests.get(link)
                 f.write(img.content)
             testnum += 1
-            continue
         else:
-            full_path = f"{dirname}/train/{query}"
+            with open(full_path + "/" + str(idx) + ".jpg", "wb") as f:
+                if link.endswith(".gif"):
+                    continue
+                img = requests.get(link)
+                f.write(img.content)
 
-        with open(full_path + "/" + str(idx) + ".jpg", "wb") as f:
-            if link.endswith(".gif"):
-                continue
-            img = requests.get(link)
-            f.write(img.content)
+
 
 
 if __name__ == "__main__":

@@ -21,6 +21,7 @@ for key in train_dataset.class_indices:
     else:
         cat1 = key
 
+
 model = tf.keras.models.Sequential([Conv2D(16, (3, 3), activation='relu', input_shape=(200, 200, 3)),
                                     MaxPool2D(2, 2),
                                     Conv2D(32, (3, 3), activation='relu', input_shape=(200, 200, 3)),
@@ -33,4 +34,5 @@ model = tf.keras.models.Sequential([Conv2D(16, (3, 3), activation='relu', input_
 
 model.compile(loss="binary_crossentropy", optimizer=RMSprop(lr=0.001), metrics=["accuracy"])
 
-model_fit = model.fit(train_dataset, steps_per_epoch=3, epochs=30, validation_data=validation_dataset)
+model_fit = model.fit(train_dataset, epochs=10, validation_data=validation_dataset)
+#steps_per_epoch=3,
